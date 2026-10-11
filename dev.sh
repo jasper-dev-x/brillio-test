@@ -19,9 +19,9 @@ blue()  { printf '\033[34m%s\033[0m\n' "$*"; }
 fail() { red "✗ $*"; exit 1; }
 
 # ---------- prerequisite checks ----------
-command -v java >/dev/null 2>&1 || fail "Java not found. Install JDK 17+ (e.g. 'brew install openjdk@21')."
+command -v java >/dev/null 2>&1 || fail "Java not found. Install JDK 21+ (e.g. 'brew install openjdk@21')."
 JAVA_MAJOR="$(java -version 2>&1 | awk -F'"' '/version/ {split($2, v, "."); print (v[1] == "1" ? v[2] : v[1])}')"
-[ "${JAVA_MAJOR:-0}" -ge 17 ] 2>/dev/null || fail "Java 17+ required (found ${JAVA_MAJOR:-unknown}). Check 'java -version' and JAVA_HOME."
+[ "${JAVA_MAJOR:-0}" -ge 21 ] 2>/dev/null || fail "Java 21+ required (found ${JAVA_MAJOR:-unknown}). Check 'java -version' and JAVA_HOME."
 
 # Maven Wrapper: downloads the pinned Maven version on first use; no global Maven install needed.
 MVN="$ROOT/backend/mvnw"

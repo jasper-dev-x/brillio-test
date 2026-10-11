@@ -5,14 +5,14 @@ filter, rank by relevance, paginate.
 
 | Layer | Stack |
 |---|---|
-| Backend | Java 17+, Spring Boot 3.5 (Web, Validation, Actuator), springdoc-openapi, Maven Wrapper |
+| Backend | Java 21+, Spring Boot 3.5 (Web, Validation, Actuator), springdoc-openapi, Maven Wrapper |
 | Frontend | React 19 + TypeScript, Redux Toolkit, Tailwind CSS 4 + daisyUI 5 (bundled with Vite) |
 | Backend tests | JUnit 5, AssertJ, Mockito, Spring MockMvc (`@WebMvcTest` slice + `@SpringBootTest`) |
 | Frontend tests | **Jest** + React Testing Library (unit/integration), **Cypress** (component), **Playwright** (end-to-end) |
 
 ## Quick start
 
-Prerequisites: **JDK 17 or newer** and **Node 22.12+**. Maven is not required; the project ships the Maven Wrapper (`backend/mvnw`).
+Prerequisites: **JDK 21 or newer** and **Node 22.12+**. Maven is not required; the project ships the Maven Wrapper (`backend/mvnw`).
 
 ```bash
 ./dev.sh     # API on :8080, UI on :5173 → open http://localhost:5173
