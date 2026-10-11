@@ -1,0 +1,14 @@
+/Users/jasper/Repos/brillio-test/backend/src/main/java/com/listings/ListingSearchApplication.java
+/Users/jasper/Repos/brillio-test/backend/src/main/java/com/listings/model/Listing.java
+/Users/jasper/Repos/brillio-test/backend/src/main/java/com/listings/repository/ListingRepository.java
+/Users/jasper/Repos/brillio-test/backend/src/main/java/com/listings/search/DuplicateDetector.java
+/Users/jasper/Repos/brillio-test/backend/src/main/java/com/listings/search/FieldError.java
+/Users/jasper/Repos/brillio-test/backend/src/main/java/com/listings/search/InvalidSearchException.java
+/Users/jasper/Repos/brillio-test/backend/src/main/java/com/listings/search/RelevanceScorer.java
+/Users/jasper/Repos/brillio-test/backend/src/main/java/com/listings/search/SearchCriteria.java
+/Users/jasper/Repos/brillio-test/backend/src/main/java/com/listings/search/SearchResult.java
+/Users/jasper/Repos/brillio-test/backend/src/main/java/com/listings/search/SearchService.java
+/Users/jasper/Repos/brillio-test/backend/src/main/java/com/listings/search/SearchValidator.java
+/Users/jasper/Repos/brillio-test/backend/src/main/java/com/listings/web/ApiError.java
+/Users/jasper/Repos/brillio-test/backend/src/main/java/com/listings/web/GlobalExceptionHandler.java
+/Users/jasper/Repos/brillio-test/backend/src/main/java/com/listings/web/ListingController.java

@@ -1,0 +1,6 @@
+server:
+  port: 8080
+
+listings:
+  # Classpath (or file:) location of the listings dataset loaded at startup.
+  data-location: classpath:data/sample_listings.json

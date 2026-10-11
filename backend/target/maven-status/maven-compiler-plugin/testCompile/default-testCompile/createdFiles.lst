@@ -1,0 +1,11 @@
+com/listings/web/ListingControllerTest.class
+com/listings/search/DuplicateDetectorTest.class
+com/listings/search/TestListings$Criteria.class
+com/listings/search/SearchServiceTest.class
+com/listings/search/SearchValidatorTest.class
+com/listings/search/RelevanceScorerTest.class
+com/listings/search/TestListings.class
+com/listings/search/SearchServiceTest$Duplicates.class
+com/listings/search/SearchServiceTest$Filtering.class
+com/listings/search/SearchServiceTest$Pagination.class
+com/listings/search/SearchServiceTest$Ranking.class
