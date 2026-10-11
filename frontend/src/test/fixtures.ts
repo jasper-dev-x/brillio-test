@@ -36,6 +36,25 @@ export function makeResponse(overrides: Partial<SearchResponse> = {}): SearchRes
   }
 }
 
+/**
+ * Minimal stand-in for a fetch Response. jsdom (Jest's browser environment) has no
+ * fetch/Response, and the API client only uses `ok`, `status` and `json()`.
+ */
 export function jsonResponse(body: unknown, status = 200): Response {
-  return new Response(JSON.stringify(body), { status, headers: { 'Content-Type': 'application/json' } })
+  return {
+    ok: status >= 200 && status < 300,
+    status,
+    json: async () => body,
+  } as Response
+}
+
+/** A response whose body is not JSON (e.g. an HTML error page from a proxy). */
+export function nonJsonResponse(status: number): Response {
+  return {
+    ok: false,
+    status,
+    json: async () => {
+      throw new SyntaxError('Unexpected token <')
+    },
+  } as unknown as Response
 }

@@ -1,4 +1,4 @@
-/** Mirrors the Spring Boot API contract (com.listings.search.SearchResult / web.ApiError). */
+/** Mirrors the Spring Boot API contract (dto.SearchResponse / RFC 9457 ProblemDetail). */
 
 export type ListingStatus = 'active' | 'pending' | 'sold'
 
@@ -50,14 +50,17 @@ export interface FieldError {
   message: string
 }
 
-export interface ApiErrorBody {
+/** RFC 9457 problem details, plus the API's `errors` extension for validation failures. */
+export interface ProblemDetail {
+  type?: string
+  title?: string
   status: number
-  error: string
-  message: string
-  details: FieldError[]
+  detail?: string
+  instance?: string
+  errors?: FieldError[]
 }
 
-/** Query parameters accepted by GET /api/listings. Omitted = not filtered. */
+/** Query parameters accepted by GET /api/v1/listings. Omitted = not filtered. */
 export interface SearchParams {
   minPrice?: number
   maxPrice?: number

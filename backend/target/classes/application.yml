@@ -1,6 +1,29 @@
+spring:
+  application:
+    name: listing-search-api
+
 server:
-  port: 8080
+  port: ${PORT:8080}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html
 
 listings:
-  # Classpath (or file:) location of the listings dataset loaded at startup.
   data-location: classpath:data/sample_listings.json
+  search:
+    default-page-size: 5
+  scoring:
+    budget-weight: 0.7
+    recency-weight: 0.3
+    under-budget-tolerance: 0.5
+    over-budget-tolerance: 0.25
+    recency-half-life-days: 30
+  cors:
+    allowed-origins: http://localhost:5173

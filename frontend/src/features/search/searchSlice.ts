@@ -41,7 +41,7 @@ export const initialState: SearchState = {
 
 interface SearchFailure {
   message: string
-  details: FieldError[]
+  fieldErrors: FieldError[]
 }
 
 /** Low-level thunk: run a search with explicit params. */
@@ -52,7 +52,7 @@ export const runSearch = createAsyncThunk<SearchResponse, SearchParams, { reject
       return await fetchListings(params, signal)
     } catch (e) {
       if (e instanceof ApiRequestError) {
-        return rejectWithValue({ message: e.message, details: e.details })
+        return rejectWithValue({ message: e.message, fieldErrors: e.fieldErrors })
       }
       throw e
     }
@@ -130,7 +130,7 @@ const searchSlice = createSlice({
         if (action.payload) {
           state.error = action.payload.message
           // Map server-side field errors onto the form so the offending input is highlighted.
-          for (const d of action.payload.details) {
+          for (const d of action.payload.fieldErrors) {
             ;(state.fieldErrors as Record<string, string>)[d.field] = d.message
           }
         } else {

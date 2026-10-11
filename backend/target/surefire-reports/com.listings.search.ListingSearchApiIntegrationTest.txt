@@ -1,0 +1,4 @@
+-------------------------------------------------------------------------------
+Test set: com.listings.search.ListingSearchApiIntegrationTest
+-------------------------------------------------------------------------------
+Tests run: 7, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 1.627 s -- in com.listings.search.ListingSearchApiIntegrationTest

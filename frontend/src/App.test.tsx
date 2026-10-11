@@ -1,38 +1,42 @@
 import { render, screen, waitFor, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { Provider } from 'react-redux'
-import { afterEach, describe, expect, it, vi } from 'vitest'
 
 import App from './App'
 import { makeStore } from './app/store'
 import { jsonResponse, makeItem, makeResponse } from './test/fixtures'
 
-type Handler = (url: URL) => Response
+const fetchMock = jest.fn() as jest.MockedFunction<typeof fetch>
 
-function mockApi(onListings: Handler) {
-  return vi.spyOn(globalThis, 'fetch').mockImplementation(async (input) => {
+/** Routes /api/v1/cities to a fixed list and everything else to `onListings`. */
+function mockApi(onListings: (url: URL) => Response) {
+  fetchMock.mockImplementation(async (input) => {
     const url = new URL(String(input), 'http://localhost')
-    if (url.pathname === '/api/cities') return jsonResponse(['Reston', 'Springfield'])
+    if (url.pathname === '/api/v1/cities') return jsonResponse(['Reston', 'Springfield'])
     return onListings(url)
   })
 }
 
+const listingCalls = () =>
+  fetchMock.mock.calls
+    .map(([input]) => new URL(String(input), 'http://localhost'))
+    .filter((url) => url.pathname === '/api/v1/listings')
+
 function renderApp() {
-  const store = makeStore()
   render(
-    <Provider store={store}>
+    <Provider store={makeStore()}>
       <App />
     </Provider>,
   )
-  return store
 }
 
-afterEach(() => {
-  vi.restoreAllMocks()
+beforeEach(() => {
+  fetchMock.mockReset()
+  global.fetch = fetchMock
 })
 
-describe('App', () => {
-  it('loads and renders ranked results with address, price, beds and score', async () => {
+describe('App (integration with Redux store, API mocked)', () => {
+  it('loads and renders ranked results with address, price, bedrooms and score', async () => {
     mockApi(() =>
       jsonResponse(
         makeResponse({
@@ -56,27 +60,30 @@ describe('App', () => {
     expect(screen.getByText(/Showing 1–2 of 2 listings/)).toBeInTheDocument()
   })
 
-  it('shows the no-results state and server notices', async () => {
+  it('shows the empty state and server notices', async () => {
     mockApi(() =>
       jsonResponse(makeResponse({ items: [], totalItems: 0, totalPages: 0, notices: ["No listings found in city 'Gotham'."] })),
     )
     renderApp()
+
     expect(await screen.findByText('No listings match your search')).toBeInTheDocument()
     expect(screen.getByText(/Gotham/)).toBeInTheDocument()
   })
 
-  it('shows an error state when the API fails', async () => {
-    mockApi(() => jsonResponse({ status: 500, error: 'x', message: 'Something went wrong. Please try again.', details: [] }, 500))
+  it('shows an error state with retry when the API fails', async () => {
+    mockApi(() => jsonResponse({ status: 500, title: 'Internal Server Error', detail: 'Something went wrong. Please try again.' }, 500))
     renderApp()
+
     expect(await screen.findByText('Search failed')).toBeInTheDocument()
     expect(screen.getByText('Something went wrong. Please try again.')).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Retry' })).toBeInTheDocument()
   })
 
-  it('shows inline validation and does not call the API for min > max', async () => {
-    const spy = mockApi(() => jsonResponse(makeResponse()))
+  it('validates inline and does not call the API when min price exceeds max price', async () => {
+    mockApi(() => jsonResponse(makeResponse()))
     renderApp()
     await screen.findByRole('table')
-    const callsBefore = spy.mock.calls.length
+    const callsBefore = listingCalls().length
 
     const user = userEvent.setup()
     await user.type(screen.getByLabelText('Min price'), '500000')
@@ -85,11 +92,35 @@ describe('App', () => {
 
     expect(await screen.findByText('Min price cannot be greater than max price')).toBeInTheDocument()
     expect(screen.getByLabelText('Min price')).toHaveAttribute('aria-invalid', 'true')
-    expect(spy.mock.calls.length).toBe(callsBefore)
+    expect(listingCalls()).toHaveLength(callsBefore)
   })
 
-  it('submits filters and paginates', async () => {
-    const spy = mockApi((url) => {
+  it('highlights the field named in a server-side validation error', async () => {
+    let first = true
+    mockApi(() => {
+      if (first) {
+        first = false
+        return jsonResponse(makeResponse())
+      }
+      return jsonResponse(
+        { status: 400, detail: 'keyword cannot be longer than 100 characters', errors: [{ field: 'keyword', message: 'keyword cannot be longer than 100 characters' }] },
+        400,
+      )
+    })
+    renderApp()
+    await screen.findByRole('table')
+
+    const user = userEvent.setup()
+    await user.type(screen.getByLabelText('Keyword'), 'pool')
+    await user.click(screen.getByRole('button', { name: 'Search' }))
+
+    expect(await screen.findByText('Search failed')).toBeInTheDocument()
+    expect(screen.getByLabelText('Keyword')).toHaveAttribute('aria-invalid', 'true')
+    expect(screen.getAllByText('keyword cannot be longer than 100 characters').length).toBeGreaterThan(0)
+  })
+
+  it('submits filters and paginates through the applied search', async () => {
+    mockApi((url) => {
       const page = Number(url.searchParams.get('page'))
       return jsonResponse(
         makeResponse({
@@ -103,8 +134,8 @@ describe('App', () => {
     })
     renderApp()
     await screen.findByText('1 Page St')
-
     const user = userEvent.setup()
+
     await user.click(screen.getByRole('button', { name: 'Next page' }))
     expect(await screen.findByText('2 Page St')).toBeInTheDocument()
     expect(screen.getByRole('button', { name: 'Page 2' })).toHaveAttribute('aria-current', 'page')
@@ -116,13 +147,13 @@ describe('App', () => {
     await user.type(screen.getByLabelText('City'), 'Reston')
     await user.click(screen.getByRole('button', { name: 'Search' }))
     await waitFor(() => {
-      const last = new URL(String(spy.mock.calls.at(-1)![0]), 'http://localhost')
+      const last = listingCalls().at(-1)!
       expect(last.searchParams.get('city')).toBe('Reston')
       expect(last.searchParams.get('page')).toBe('1')
     })
   })
 
-  it('flags possible duplicates', async () => {
+  it('flags possible cross-feed duplicates', async () => {
     mockApi(() =>
       jsonResponse(
         makeResponse({
@@ -131,6 +162,7 @@ describe('App', () => {
       ),
     )
     renderApp()
+
     expect(await screen.findByTestId('duplicate-badge')).toHaveTextContent('Possible duplicate')
   })
 })

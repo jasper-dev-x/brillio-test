@@ -1,6 +1,9 @@
-/Users/jasper/Repos/brillio-test/backend/src/test/java/com/listings/search/DuplicateDetectorTest.java
-/Users/jasper/Repos/brillio-test/backend/src/test/java/com/listings/search/RelevanceScorerTest.java
-/Users/jasper/Repos/brillio-test/backend/src/test/java/com/listings/search/SearchServiceTest.java
-/Users/jasper/Repos/brillio-test/backend/src/test/java/com/listings/search/SearchValidatorTest.java
-/Users/jasper/Repos/brillio-test/backend/src/test/java/com/listings/search/TestListings.java
-/Users/jasper/Repos/brillio-test/backend/src/test/java/com/listings/web/ListingControllerTest.java
+/Users/jasper/Repos/brillio-test/backend/src/test/java/com/listings/search/ListingSearchApiIntegrationTest.java
+/Users/jasper/Repos/brillio-test/backend/src/test/java/com/listings/search/controller/ListingControllerTest.java
+/Users/jasper/Repos/brillio-test/backend/src/test/java/com/listings/search/dto/ListingSearchRequestValidationTest.java
+/Users/jasper/Repos/brillio-test/backend/src/test/java/com/listings/search/mapper/ListingMapperTest.java
+/Users/jasper/Repos/brillio-test/backend/src/test/java/com/listings/search/repository/JsonFileListingRepositoryTest.java
+/Users/jasper/Repos/brillio-test/backend/src/test/java/com/listings/search/service/DefaultListingSearchServiceTest.java
+/Users/jasper/Repos/brillio-test/backend/src/test/java/com/listings/search/service/dedup/DuplicateDetectorTest.java
+/Users/jasper/Repos/brillio-test/backend/src/test/java/com/listings/search/service/scoring/RelevanceScorerTest.java
+/Users/jasper/Repos/brillio-test/backend/src/test/java/com/listings/search/support/TestListings.java

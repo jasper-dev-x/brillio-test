@@ -1,0 +1,61 @@
+{
+  "groups": [
+    {
+      "name": "listings.scoring",
+      "type": "com.listings.search.config.ScoringProperties",
+      "sourceType": "com.listings.search.config.ScoringProperties"
+    },
+    {
+      "name": "listings.search",
+      "type": "com.listings.search.config.SearchProperties",
+      "sourceType": "com.listings.search.config.SearchProperties"
+    }
+  ],
+  "properties": [
+    {
+      "name": "listings.scoring.budget-weight",
+      "type": "java.lang.Double",
+      "description": "weight of budget fit in the blended score (0..1)",
+      "sourceType": "com.listings.search.config.ScoringProperties",
+      "defaultValue": 0.7
+    },
+    {
+      "name": "listings.scoring.over-budget-tolerance",
+      "type": "java.lang.Double",
+      "description": "fraction above target at which budget fit reaches 0",
+      "sourceType": "com.listings.search.config.ScoringProperties",
+      "defaultValue": 0.25
+    },
+    {
+      "name": "listings.scoring.recency-half-life-days",
+      "type": "java.lang.Double",
+      "description": "days for the recency score to halve",
+      "sourceType": "com.listings.search.config.ScoringProperties",
+      "defaultValue": 30
+    },
+    {
+      "name": "listings.scoring.recency-weight",
+      "type": "java.lang.Double",
+      "description": "weight of recency in the blended score (0..1)",
+      "sourceType": "com.listings.search.config.ScoringProperties",
+      "defaultValue": 0.3
+    },
+    {
+      "name": "listings.scoring.under-budget-tolerance",
+      "type": "java.lang.Double",
+      "description": "fraction below target at which budget fit reaches 0",
+      "sourceType": "com.listings.search.config.ScoringProperties",
+      "defaultValue": 0.5
+    },
+    {
+      "name": "listings.search.default-page-size",
+      "type": "java.lang.Integer",
+      "sourceType": "com.listings.search.config.SearchProperties",
+      "defaultValue": 5
+    }
+  ],
+  "hints": [],
+  "ignored": {
+    "properties": []
+  }
+}

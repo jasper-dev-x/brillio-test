@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #
-# Runs the Spring Boot API and the Vite dev server together for local development.
+# Runs the Spring Boot API and the Vite (React) dev server together for local development.
 #
 #   ./dev.sh                      # API on :8080, UI on :5173
 #   BACKEND_PORT=9090 ./dev.sh    # custom API port (the UI proxy follows it)
@@ -21,15 +21,11 @@ fail() { red "✗ $*"; exit 1; }
 # ---------- prerequisite checks ----------
 command -v java >/dev/null 2>&1 || fail "Java not found. Install JDK 17+ (e.g. 'brew install openjdk@21')."
 JAVA_MAJOR="$(java -version 2>&1 | awk -F'"' '/version/ {split($2, v, "."); print (v[1] == "1" ? v[2] : v[1])}')"
-[ "${JAVA_MAJOR:-0}" -ge 17 ] 2>/dev/null || fail "Java 17+ required (found ${JAVA_MAJOR:-unknown})."
+[ "${JAVA_MAJOR:-0}" -ge 17 ] 2>/dev/null || fail "Java 17+ required (found ${JAVA_MAJOR:-unknown}). Check 'java -version' and JAVA_HOME."
 
-if command -v mvn >/dev/null 2>&1; then
-  MVN="mvn"
-elif [ -x "$ROOT/backend/mvnw" ]; then
-  MVN="$ROOT/backend/mvnw"
-else
-  fail "Maven not found. Install it with 'brew install maven'."
-fi
+# Maven Wrapper: downloads the pinned Maven version on first use; no global Maven install needed.
+MVN="$ROOT/backend/mvnw"
+[ -x "$MVN" ] || chmod +x "$MVN"
 
 command -v node >/dev/null 2>&1 || fail "Node.js not found. Install Node 22.12+ (e.g. 'nvm install 22')."
 NODE_MAJOR="$(node -p 'process.versions.node.split(".")[0]')"
@@ -71,7 +67,7 @@ blue "• Starting backend on http://localhost:$BACKEND_PORT ..."
 # Wait until the API answers so the UI's first request doesn't fail.
 # The first run can take a while because Maven downloads dependencies.
 for i in $(seq 1 180); do
-  if curl -fsS "http://localhost:$BACKEND_PORT/api/cities" >/dev/null 2>&1; then
+  if curl -fsS "http://localhost:$BACKEND_PORT/actuator/health" >/dev/null 2>&1; then
     green "✓ Backend is up"
     break
   fi
@@ -86,5 +82,6 @@ blue "• Starting frontend on http://localhost:$FRONTEND_PORT ..."
   API_URL="http://localhost:$BACKEND_PORT" npx vite --port "$FRONTEND_PORT" --strictPort 2>&1 | prefix $'\033[36m[web]\033[0m '
 ) &
 
-green "✓ Open http://localhost:$FRONTEND_PORT  (Ctrl+C to stop both)"
+green "✓ App:     http://localhost:$FRONTEND_PORT"
+green "✓ API docs: http://localhost:$BACKEND_PORT/swagger-ui.html   (Ctrl+C stops both)"
 wait
